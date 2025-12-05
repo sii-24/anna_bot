@@ -16,7 +16,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         db.add_user(update.effective_user.id)
         print("Пользователь добавлен")
-        context.bot.send_message(chat_id=ADMIN, text="Новый пользователь!\n\n" + str(update.effective_user))
+        await context.bot.send_message(chat_id=ADMIN, text="Новый пользователь!\n\n" + str(update.effective_user))
     except:
         print("Пользователь уже существует")
 
