@@ -1,3 +1,10 @@
+config.py
+anna_bot.db
+.vscode
+test.py
+.DS_Store
+*/.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
