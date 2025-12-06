@@ -44,5 +44,5 @@ async def noti(context: ContextTypes.DEFAULT_TYPE):
     users = db.get_users()
     for user in users:
         if not db.streak(user):
-            context.bot.send_message(chat_id=user, text=msg)
+            await context.bot.send_message(chat_id=user, text=msg)
 
