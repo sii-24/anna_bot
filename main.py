@@ -7,6 +7,7 @@ from config import TOKEN
 from send import send, rand_var
 from check import check
 from noti import noti
+from stati import stat
 from start import start
 from reset_streak import reset_streak
 
@@ -50,6 +51,9 @@ app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=55, tzinfo=Zone
 
 #Запрос случайно сформированного варианта
 app.add_handler(CommandHandler("rand_var", rand_var))
+
+#Статистика пользователя
+app.add_handler(CommandHandler("stat", stat))
 
 app.add_handler(CommandHandler("start", start))
 

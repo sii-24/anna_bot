@@ -3,7 +3,7 @@ from telegram.ext import ContextTypes
 
 from connect import DB
 from send import rand_var
-from config import ADMIN
+from config import ADMINS
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -14,9 +14,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     db = DB()
     try:
-        db.add_user(update.effective_user.id)
+        db.add_user(update.effective_user.id, update.effective_user.name)
         print("Пользователь добавлен")
-        await context.bot.send_message(chat_id=ADMIN, text="Новый пользователь!\n\n" + str(update.effective_user))
+        for admin in ADMINS:
+            await context.bot.send_message(chat_id=admin, text="Новый пользователь!\n\n" + str(update.effective_user))
     except:
         print("Пользователь уже существует")
 
