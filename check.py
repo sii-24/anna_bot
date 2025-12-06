@@ -17,7 +17,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 k += 1
                 msg += f"{i+1} "
             else:
-                msg += f"<b>{i+1}</b> "
+                msg += f"<u>{i+1}</u> "
         res = round(k/len(cor_ans)*100, 1)
         msg += f" - {k}/{len(cor_ans)} баллов ({res}%)"
         msg += f"\nВерные ответы: <tg-spoiler>{ans}</tg-spoiler>"

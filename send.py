@@ -43,7 +43,7 @@ async def send_ex(context: ContextTypes.DEFAULT_TYPE, msg, ex_n):
     exs = []
     while len(exs) != 10:
         exs = list(set(random.choices(range(1, EX+1), k=10)))
-    media = [InputMediaPhoto(media=open(f"resources/img/{ex_n}/ex{exs[0]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
+    media = [InputMediaPhoto(media=open(f"resources/img/{ex_n}/ex{exs[0]}.png", "rb"), caption=msg, parse_mode='HTML')]
     cur_var = db.add_exs(exs, ex_n)
     for i in range(1, len(exs)):
         media.append(InputMediaPhoto(media=open(f"resources/img/{ex_n}/ex{exs[i]}.png", "rb")))
@@ -51,7 +51,9 @@ async def send_ex(context: ContextTypes.DEFAULT_TYPE, msg, ex_n):
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
     db.set_cur_var(users[0], cur_var)
     file_ids = [m.photo[-1].file_id for m in t]
-    media = [InputMediaPhoto(media=file_id) for file_id in file_ids]
+    media = [InputMediaPhoto(media=file_ids[0], caption=msg, parse_mode='HTML')]
+    for file_id in file_ids[1:]:
+        media.append(InputMediaPhoto(media=file_id))
     for user in users[1:]:
         db.set_cur_var(user, cur_var)
         await context.bot.send_media_group(chat_id=user, media=media)
@@ -76,7 +78,9 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
     db.set_cur_var(users[0], cur_var)
     file_ids = [m.photo[-1].file_id for m in t]
-    media = [InputMediaPhoto(media=file_id) for file_id in file_ids]
+    media = [InputMediaPhoto(media=file_ids[0], caption=msg, parse_mode='HTML')]
+    for file_id in file_ids[1:]:
+        media.append(InputMediaPhoto(media=file_id))
     for user in users[1:]:
         db.set_cur_var(user, cur_var)
         await context.bot.send_media_group(chat_id=user, media=media)
