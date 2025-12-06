@@ -12,13 +12,21 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = "<b>Cтатистика</b>"
         users = db.get_users()
         for user in users:
+            if db.streak(user):
+                st = "🔥"
+            else:
+                st ="⏳"
             text += (f"\n\n<b>{db.get_name(user)}</b>\n" +
-                     f"Дней в ударном режиме: {db.get_days(user)}\n" +
+                     f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
                      f"Cредний результат: {db.get_res(user)}\n" +
                      f"Всего решено заданий: {db.get_exs_count(user)}")
     else:
+        if db.streak(user):
+            st = "🔥"
+        else:
+            st ="⏳"
         text = (f"<b>Твоя статистика</b>\n" +
-                f"Дней в ударном режиме: {db.get_days(user)}\n" +
+                f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
                 f"Cредний результат: {db.get_res(user)}\n" +
                 f"Всего решено заданий: {db.get_exs_count(user)}")
         
