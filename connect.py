@@ -15,7 +15,7 @@ class DB:
         self.cur_us = self.db_us.cursor()
         self.db_ex.execute('CREATE TABLE IF NOT EXISTS exs(id PRIMARY KEY, answer TEXT)')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS vars(id PRIMARY KEY, answer)')
-        self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id PRIMARY KEY, streak INT, days INT, res REAL, exs_count INT, cur_var TEXT)')
+        self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id PRIMARY KEY, name TEXT, streak INT, days INT, res REAL, exs_count INT, cur_var TEXT)')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS serv(key PRIMARY KEY, data)')
         try:
             self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("ex_n", 1))
@@ -35,8 +35,28 @@ class DB:
 
 
     def streak(self, user):
-        res = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()
+        res = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
         return bool(res)
+    
+
+    def get_days(self, user):
+        res = self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0]
+        return int(res)
+    
+
+    def get_res(self, user):
+        res = self.cur_us.execute("SELECT res FROM users WHERE id == ?", (user, )).fetchone()[0]
+        return str(res)
+    
+
+    def get_name(self, user):
+        res = self.cur_us.execute("SELECT name FROM users WHERE id == ?", (user, )).fetchone()[0]
+        return str(res)
+    
+
+    def get_exs_count(self, user):
+        res = self.cur_us.execute("SELECT exs_count FROM users WHERE id == ?", (user, )).fetchone()[0]
+        return int(res)
     
 
     def get_ex_n(self):
@@ -108,8 +128,8 @@ class DB:
         return res
     
     
-    def add_user(self, user):
-        self.cur_us.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?)", (user, 0, 0, 100, 0, 1))
+    def add_user(self, user, name):
+        self.cur_us.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)", (user, name, 0, 0, 100, 0, 1))
         self.db_us.commit()
 
 
