@@ -9,7 +9,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user.id
     db = DB()
     if user in ADMINS:
-        text = "<b>Cтатистика</b>\n"
+        text = "<b>Cтатистика</b>"
         users = db.get_users()
         for user in users:
             text += (f"\n\n<b>{db.get_name(user)}</b>\n" +
