@@ -28,7 +28,7 @@ async def send(context: ContextTypes.DEFAULT_TYPE):
         "Тест! Проверь свои знания",
         ]
     msg = disc[ex_n-1]
-    msg += "\n\n<i>Ответы на задания присылай одним сообщением, разделяя их ;</i>"
+    msg += "\n\n<i>Ответы на задания присылай одним сообщением, разделяя их ;</i>\nНапример: 162; 33; 10; 0,2; 0,88; -5; 0,008; 2; 3,5; 8; -4; -8"
     db.update_ex_n()
     if ex_n % 7 == 0:
         await send_test(context, msg)
@@ -87,11 +87,13 @@ async def rand_var(update: Update, context: ContextTypes.DEFAULT_TYPE):
     exs = list(random.choices(range(1, EX+1), k=12))
     db = DB()
     cur_var = db.add_exs(exs, -1)
+    msg = "Лови свежий вариантик!\n\n<i>Ответы на задания присылай одним сообщением, разделяя их ;</i>\nНапример: 162; 33; 10; 0,2; 0,88; -5; 0,008; 2; 3,5; 8; -4; -8"
+    
     media = []
     for i in range(10):
         media.append(InputMediaPhoto(media=open(f"resources/img/{i+1}/ex{exs[i]}.png", "rb")))
     await update.message.reply_media_group(media=media, parse_mode='HTML')
-    media = [InputMediaPhoto(media=open(f"resources/img/11/ex{exs[10]}.png", "rb"), caption="Лови свежий вариантик!", parse_mode=telegram.constants.ParseMode.HTML)]
+    media = [InputMediaPhoto(media=open(f"resources/img/11/ex{exs[10]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
     for i in range(11, 12):
         media.append(InputMediaPhoto(media=open(f"resources/img/{i+1}/ex{exs[i]}.png", "rb")))
     await update.message.reply_media_group(media=media)
