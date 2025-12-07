@@ -10,6 +10,7 @@ from noti import noti
 from stati import stat
 from start import start
 from reset_streak import reset_streak
+from mailing import mailing_handler
 
 
 app = ApplicationBuilder().token(TOKEN).build()
@@ -54,6 +55,9 @@ app.add_handler(CommandHandler("rand_var", rand_var))
 
 #Статистика пользователя
 app.add_handler(CommandHandler("stat", stat))
+
+#Рассылка
+app.add_handler(mailing_handler)
 
 app.add_handler(CommandHandler("start", start))
 
