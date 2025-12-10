@@ -6,14 +6,14 @@ from config import ADMINS
 
 
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user.id
     db = DB()
     users = db.get_users()
     d = {}
     for user in users:
         d[db.get_week_exs_count(user)] = user
+    user = update.effective_user.id
     text = "<b>Недельный рейтинг:</b><code>\n"
-    d_k = sorted(d.keys())
+    d_k = sorted(d.keys(), reverse=True)
     for i in range(1, 4):
         text += f"{i}. {db.get_name(d[d_k[i-1]])}\n"
     text += "</code>\n"
@@ -30,7 +30,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"<b>Статистика по заданиям</b><code>\n" +
             f"№   Кол-во  Ср. рез.\n")
     for i in zip(range(1, 13), db.get_exs_c(user), db.get_exs_p(user)):
-        text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
+        text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {(str(i[2]) + ' %').ljust(5)}\n"
     text += f"</code>"
 
     await update.message.reply_html(text)
