@@ -1,5 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
+import sqlite3
 
 from connect import DB
 from send import rand_var
@@ -14,11 +15,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     db = DB()
     try:
-        db.add_user(update.effective_user.id, update.effective_user.name)
+        db.add_user(update.effective_user)
         print("Пользователь добавлен")
         for admin in ADMINS:
             await context.bot.send_message(chat_id=admin, text="Новый пользователь!\n\n" + str(update.effective_user))
-    except:
+    except sqlite3.IntegrityError:
         print("Пользователь уже существует")
 
     await update.message.reply_text(text)
