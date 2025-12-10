@@ -7,9 +7,11 @@ from config import TOKEN
 from send import send, rand_var
 from check import check
 from noti import noti
-from stati import stat
+from stati import stat, full_stat
 from start import start
 from reset_streak import reset_streak
+from set_name import set_name
+from support import support
 from mailing import mailing_handler
 
 
@@ -18,7 +20,13 @@ app = ApplicationBuilder().token(TOKEN).build()
 
 #app.job_queue.run_repeating(
 #            send,
-#            interval=30
+#            interval=5
+#        )
+#
+#app.job_queue.run_repeating(
+#            reset_streak,
+#            interval=10,
+#            first=58
 #        )
 
 
@@ -55,13 +63,19 @@ app.add_handler(CommandHandler("rand_var", rand_var))
 
 #Статистика пользователя
 app.add_handler(CommandHandler("stat", stat))
+app.add_handler(CommandHandler("week_stat", full_stat))
 
 #Рассылка
 app.add_handler(mailing_handler)
 
+#Установка имени пользователя
+app.add_handler(CommandHandler("set_name", set_name))
+
+app.add_handler(CommandHandler("support", support))
+
 app.add_handler(CommandHandler("start", start))
 
 #Сюда попадают все ответы и идут на проверку
-app.add_handler(MessageHandler(filters.ALL, check))
+app.add_handler(MessageHandler(filters.TEXT, check))
 
 app.run_polling()

@@ -1,6 +1,5 @@
-from telegram import InputMediaPhoto, Update
+from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
-import telegram.constants
 
 from connect import DB
 from config import ADMINS
@@ -57,7 +56,7 @@ async def get_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-async def cancel(update: telegram.Update, context: ContextTypes.DEFAULT_TYPE):
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     await update.message.reply_text("Операция прервана!")
     return ConversationHandler.END
