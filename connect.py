@@ -147,12 +147,12 @@ class DB:
     #Активность ударного режима сегодня
     def streak(self, user):
         res = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
-        return bool(res)
+        return int(res)
     
 
     #Получение количества дней в ударном режиме
     def get_days(self, user):
-        res = self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = int(self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0])
         return int(res)
     
 
@@ -223,7 +223,7 @@ class DB:
         streak = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
         if streak == 0:
             self.cur_us.execute("UPDATE users SET streak == ? WHERE id == ?", (1, user))
-            days = self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0]
+            days = int(self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0])
             self.cur_us.execute("UPDATE users SET days == ? WHERE id == ?", (days+1, user))
 
         #gen_p
@@ -236,11 +236,11 @@ class DB:
         self.cur_us.execute("UPDATE users SET gen_c == ? WHERE id == ?", (exs_count+k, user))
 
         #week_c
-        week_c = self.cur_us.execute("SELECT week_c FROM users WHERE id == ?", (user, )).fetchone()[0]
+        week_c = int(self.cur_us.execute("SELECT week_c FROM users WHERE id == ?", (user, )).fetchone()[0])
         self.cur_us.execute("UPDATE users SET week_c == ? WHERE id == ?", (week_c+k, user))
 
         #day_c
-        day_c = self.cur_us.execute("SELECT day_c FROM users WHERE id == ?", (user, )).fetchone()[0]
+        day_c = int(self.cur_us.execute("SELECT day_c FROM users WHERE id == ?", (user, )).fetchone()[0])
         self.cur_us.execute("UPDATE users SET day_c == ? WHERE id == ?", (day_c+k, user))
 
         #ex_p

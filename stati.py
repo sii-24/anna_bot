@@ -15,7 +15,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = "<b>Недельный рейтинг:</b><code>\n"
     d_k = sorted(d.keys(), reverse=True)
     for i in range(1, 4):
-        text += f"{i}. {db.get_name(d[d_k[i-1]])}\n"
+        text += f"{i}. {db.get_name(d[d_k[i-1]])} - {db.get_week_exs_count(d[d_k[i-1]])}\n"
     text += "</code>\n"
     if db.streak(user):
         st = "🔥"
@@ -37,13 +37,12 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user.id
     db = DB()
-    if user not in ADMINS:
+    if update.effective_user.id not in ADMINS:
         return
     text = "<b>Cтатистика</b>"
     users = db.get_users()
-    for user in users:  
+    for user in users:
         if db.streak(user):
             st = "🔥"
         else:
