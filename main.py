@@ -63,7 +63,7 @@ app.add_handler(CommandHandler("rand_var", rand_var))
 
 #Статистика пользователя
 app.add_handler(CommandHandler("stat", stat))
-app.add_handler(CommandHandler("week_stat", full_stat))
+app.add_handler(CommandHandler("full_stat", full_stat))
 
 #Рассылка
 app.add_handler(mailing_handler)
