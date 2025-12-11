@@ -13,13 +13,15 @@ class DB:
         self.cur_ex = self.db_ex.cursor()
         self.db_us = sqlite3.connect("anna_bot.db")
         self.cur_us = self.db_us.cursor()
-        self.db_ex.execute('CREATE TABLE IF NOT EXISTS exs(id PRIMARY KEY, answer TEXT)')
-        self.db_us.execute('CREATE TABLE IF NOT EXISTS vars(id PRIMARY KEY, answer, type)')
-        self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id PRIMARY KEY, username, name, cur_var, streak, ' \
-        'days, gen_p, gen_c, week_c, day_c, ex_1_c, ex_2_c, ex_3_c, ex_4_c, ex_5_c, ex_6_c, ex_7_c, ex_8_c, ' \
-        'ex_9_c, ex_10_c, ex_11_c, ex_12_c, ex_1_p, ex_2_p, ex_3_p, ex_4_p, ex_5_p, ex_6_p, ex_7_p, ex_8_p, ' \
-        'ex_9_p, ex_10_p, ex_11_p, ex_12_p)')
-        self.db_us.execute('CREATE TABLE IF NOT EXISTS serv(key PRIMARY KEY, data)')
+        self.db_ex.execute('CREATE TABLE IF NOT EXISTS exs(id TEXT PRIMARY KEY, answer TEXT) STRICT')
+        self.db_us.execute('CREATE TABLE IF NOT EXISTS vars(id INT PRIMARY KEY, answer TEXT, type INT) STRICT')
+        self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id INT PRIMARY KEY, username TEXT, name TEXT, \
+                            cur_var INT, streak INT, days INT, gen_p TEXT, gen_c INT, week_c INT, day_c INT, \
+                            ex_1_c INT, ex_2_c INT, ex_3_c INT, ex_4_c INT, ex_5_c INT, ex_6_c INT, ex_7_c INT, \
+                            ex_8_c INT, ex_9_c INT, ex_10_c INT, ex_11_c INT, ex_12_c INT, ex_1_p TEXT, ex_2_p TEXT, \
+                            ex_3_p TEXT, ex_4_p TEXT, ex_5_p TEXT, ex_6_p TEXT, ex_7_p TEXT, ex_8_p TEXT, \
+                            ex_9_p TEXT, ex_10_p TEXT, ex_11_p TEXT, ex_12_p TEXT) STRICT')
+        self.db_us.execute('CREATE TABLE IF NOT EXISTS serv(key TEXT PRIMARY KEY, data INT) STRICT')
         try:
             self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("ex_n", 0))
         except:
@@ -62,7 +64,7 @@ class DB:
             for i in exs:
                 ans.append(self.cur_ex.execute("SELECT answer FROM exs WHERE id == ?", (f"{n}_{i}", )).fetchone()[0])
         ans = "; ".join(ans)
-        self.cur_us.execute("INSERT INTO vars VALUES(?, ?, ?)", (var_id, ans, n))
+        self.cur_us.execute("INSERT INTO vars VALUES(?, ?, ?)", (var_id, ans, int(n)))
         self.cur_us.execute("UPDATE serv SET data == ? WHERE key == ?", (var_id + 1, "var_id"))
         self.db_us.commit()
         return var_id
@@ -94,7 +96,7 @@ class DB:
     #Добавление пользователя
     def add_user(self, user):
         self.cur_us.execute("INSERT INTO users VALUES( \
-                            ?,     ?,             ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,     ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?,       ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?)",
+                            ?,        ?,             ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,     ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?,       ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?)",
                             (user.id, user.username, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
                             #id,      username,      name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c, ex_1_c, ex_2_c, ex_3_c, ex_4_c, ex_5_c, ex_6_c, ex_7_c, ex_8_c, ex_9_c, ex_10_c, ex_11_c, ex_12_c, ex_1_p, ex_2_p, ex_3_p, ex_4_p, ex_5_p, ex_6_p, ex_7_p, ex_8_p, ex_9_p, ex_10_p, ex_11_p, ex_12_p
         self.db_us.commit()

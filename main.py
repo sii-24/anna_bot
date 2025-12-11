@@ -43,19 +43,19 @@ app.job_queue.run_daily(
         )
 
 #Отправка напоминаний
-app.job_queue.run_daily(noti, time=datetime.time(hour=6, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=12, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=15, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=18, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=20, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=21, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=22, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=0, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=15, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=30, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=45, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=50, tzinfo=ZoneInfo("Europe/Moscow")))
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=55, tzinfo=ZoneInfo("Europe/Moscow")))
+app.job_queue.run_daily(noti, time=datetime.time(hour=6, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
+app.job_queue.run_daily(noti, time=datetime.time(hour=12, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
+app.job_queue.run_daily(noti, time=datetime.time(hour=15, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
+app.job_queue.run_daily(noti, time=datetime.time(hour=18, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
+app.job_queue.run_daily(noti, time=datetime.time(hour=20, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 1})
+app.job_queue.run_daily(noti, time=datetime.time(hour=21, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 1})
+app.job_queue.run_daily(noti, time=datetime.time(hour=22, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 1})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=30, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=45, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=50, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=55, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
 
 
 #Запрос случайно сформированного варианта

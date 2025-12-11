@@ -4,6 +4,7 @@ anna_bot.db
 test.py
 .DS_Store
 */.DS_Store
+.VSCodeCounter
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

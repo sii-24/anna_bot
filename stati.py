@@ -11,12 +11,12 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     d = {}
     for user in users:
         d[db.get_week_exs_count(user)] = user
-    user = update.effective_user.id
     text = "<b>Недельный рейтинг:</b><code>\n"
     d_k = sorted(d.keys(), reverse=True)
     for i in range(1, 4):
         text += f"{i}. {db.get_name(d[d_k[i-1]])} - {db.get_week_exs_count(d[d_k[i-1]])}\n"
     text += "</code>\n"
+    user = update.effective_user.id
     if db.streak(user):
         st = "🔥"
     else:
