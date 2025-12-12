@@ -65,7 +65,7 @@ async def send_ex(context: ContextTypes.DEFAULT_TYPE, msg, ex_n):
             await context.bot.send_media_group(chat_id=user, media=media)
             db.set_cur_var(user, cur_var)
         except telegram.error.BadRequest as e:
-            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
+            await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
 
 
 async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
@@ -83,7 +83,7 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
         try:
             await context.bot.send_media_group(chat_id=user, media=media)
         except telegram.error.BadRequest as e:
-            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
+            await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
     media = [InputMediaPhoto(media=open(f"resources/img/11/ex{exs[10]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
     for i in range(11, 12):
         media.append(InputMediaPhoto(media=open(f"resources/img/{i+1}/ex{exs[i]}.png", "rb")))
@@ -98,7 +98,7 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
             await context.bot.send_media_group(chat_id=user, media=media)
             db.set_cur_var(user, cur_var)
         except telegram.error.BadRequest as e:
-            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
+            await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
 
 
 
