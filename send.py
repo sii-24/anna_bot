@@ -4,7 +4,7 @@ import telegram.constants
 import random
 
 from connect import DB
-from config import EX
+from config import EX, ADMINS
 
 
 disc = [
@@ -22,6 +22,11 @@ disc = [
         "Задание 12: наибольшее и наименьшее значение функции",
         "Тест! Проверь свои знания",
         ]
+
+async def send_manual(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ADMINS:
+        return
+    await send(context)
 
 
 async def send(context: ContextTypes.DEFAULT_TYPE):
@@ -56,8 +61,11 @@ async def send_ex(context: ContextTypes.DEFAULT_TYPE, msg, ex_n):
     for file_id in file_ids[1:]:
         media.append(InputMediaPhoto(media=file_id))
     for user in users[1:]:
-        db.set_cur_var(user, cur_var)
-        await context.bot.send_media_group(chat_id=user, media=media)
+        try:
+            await context.bot.send_media_group(chat_id=user, media=media)
+            db.set_cur_var(user, cur_var)
+        except telegram.error.BadRequest as e:
+            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
 
 
 async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
@@ -72,7 +80,10 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     file_ids = [m.photo[-1].file_id for m in t]
     media = [InputMediaPhoto(media=file_id) for file_id in file_ids]
     for user in users[1:]:
-        await context.bot.send_media_group(chat_id=user, media=media)
+        try:
+            await context.bot.send_media_group(chat_id=user, media=media)
+        except telegram.error.BadRequest as e:
+            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
     media = [InputMediaPhoto(media=open(f"resources/img/11/ex{exs[10]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
     for i in range(11, 12):
         media.append(InputMediaPhoto(media=open(f"resources/img/{i+1}/ex{exs[i]}.png", "rb")))
@@ -83,8 +94,12 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     for file_id in file_ids[1:]:
         media.append(InputMediaPhoto(media=file_id))
     for user in users[1:]:
-        db.set_cur_var(user, cur_var)
-        await context.bot.send_media_group(chat_id=user, media=media)
+        try:
+            await context.bot.send_media_group(chat_id=user, media=media)
+            db.set_cur_var(user, cur_var)
+        except telegram.error.BadRequest as e:
+            context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)()}\n{str(e)}")
+
 
 
 async def rand_var(update: Update, context: ContextTypes.DEFAULT_TYPE):

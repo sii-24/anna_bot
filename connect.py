@@ -230,7 +230,7 @@ class DB:
 
         #gen_p
         cur_res = float(self.cur_us.execute("SELECT gen_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-        cur_res = (cur_res + res) / 2
+        cur_res = (cur_res * self.get_days(user) + res) / (self.get_days(user) + 1)
         self.cur_us.execute("UPDATE users SET gen_p == ? WHERE id == ?", (str(round(cur_res, 2)), user))
 
         #gen_c
@@ -249,14 +249,14 @@ class DB:
         if exs_res:
             for i in range(12):
                 cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{i+1}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-                cur_ex_res = (10 * cur_ex_res + 100 * exs_res[i]) / 11 #Вес одного задания 1/10
+                n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
+                cur_ex_res = (cur_ex_res * n * exs_res[i]) / (n + 1)
                 self.cur_us.execute(f"UPDATE users SET ex_{i+1}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))  
 
         else:
-            if ex_n > 7:
-                ex_n -= 1
             cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{ex_n}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-            cur_ex_res = (cur_ex_res + res) / 2
+            n = int(self.cur_us.execute(f"SELECT ex_{ex_n}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
+            cur_ex_res = (cur_ex_res * n + res) / (n+1)
             self.cur_us.execute(f"UPDATE users SET ex_{ex_n}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))
 
         #ex_c
