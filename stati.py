@@ -8,13 +8,18 @@ from config import ADMINS
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = DB()
     users = db.get_users()
-    d = {}
+    d = []
     for user in users:
-        d[db.get_week_exs_count(user)] = user
+        u = (db.get_name(user), db.get_week_exs_count(user))
+        d.append(u)
+    d = sorted(d, key=lambda u: u[1], reverse=True)
     text = "<b>Недельный рейтинг:</b><code>\n"
-    d_k = sorted(d.keys(), reverse=True)
-    for i in range(1, 4):
-        text += f"{i}. {db.get_name(d[d_k[i-1]])} - {db.get_week_exs_count(d[d_k[i-1]])}\n"
+    if len(d) < 5:
+        n = len(d)
+    else:
+        n = 5
+    for i in range(n):
+        text += f"{i+1}. {d[i][0]} - {d[i][1]}\n"
     text += "</code>\n"
     user = update.effective_user.id
     if db.streak(user):
@@ -23,7 +28,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         st ="⏳"
     text += (f"<b>Твоя статистика</b>\n" +
             f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
-            f"Cредний результат: {db.get_res(user)}\n" +
+            f"Cредний результат: {db.get_res(user)}%\n" +
             f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
             f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
             f"Всего решено: {db.get_exs_count(user)}\n\n" +
@@ -40,7 +45,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = DB()
     if update.effective_user.id not in ADMINS:
         return
-    text = "<b>Cтатистика</b>"
+    text = "<b>Недельный рейтинг</b>"
     users = db.get_users()
     d = []
     for user in users:
@@ -51,10 +56,20 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             u.append("⏳")
         d.append(u)
+
+    l = sorted(d, key=lambda u: u[4], reverse=True)
+    text = "<b>Недельный рейтинг:</b><code>\n"
+    if len(d) < 5:
+        n = len(d)
+    else:
+        n = 5
+    for i in range(n):
+        text += f"{i+1}. {d[i][0]} - {d[i][4]}\n"
+    text += "</code>"
     for u in sorted(d, key=lambda u: u[5], reverse=True):
         text += (f"\n\n<b>{u[0]}</b>\n" +
             f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
-            f"Cредний результат: {u[2]}\n" +
+            f"Cредний результат: {u[2]}%\n" +
             f"Сегодня решено: {u[3]}\n" +
             f"Решено за неделю: {u[4]}\n" +
             f"Всего решено: {u[5]}\n\n" +
