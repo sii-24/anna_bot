@@ -59,12 +59,12 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     l = sorted(d, key=lambda u: u[4], reverse=True)
     text = "<b>Недельный рейтинг:</b><code>\n"
-    if len(d) < 5:
-        n = len(d)
+    if len(l) < 5:
+        n = len(l)
     else:
         n = 5
     for i in range(n):
-        text += f"{i+1}. {d[i][0]} - {d[i][4]}\n"
+        text += f"{i+1}. {l[i][0]} - {l[i][4]}\n"
     text += "</code>"
     for u in sorted(d, key=lambda u: u[5], reverse=True):
         text += (f"\n\n<b>{u[0]}</b>\n" +
