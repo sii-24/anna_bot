@@ -97,7 +97,7 @@ class DB:
     def add_user(self, user):
         self.cur_us.execute("INSERT INTO users VALUES( \
                             ?,        ?,             ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,     ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?,       ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?)",
-                            (user.id, user.username, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
+                            (user.id, '@'+user.username, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
                             #id,      username,      name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c, ex_1_c, ex_2_c, ex_3_c, ex_4_c, ex_5_c, ex_6_c, ex_7_c, ex_8_c, ex_9_c, ex_10_c, ex_11_c, ex_12_c, ex_1_p, ex_2_p, ex_3_p, ex_4_p, ex_5_p, ex_6_p, ex_7_p, ex_8_p, ex_9_p, ex_10_p, ex_11_p, ex_12_p
         self.db_us.commit()
 
@@ -230,7 +230,9 @@ class DB:
 
         #gen_p
         cur_res = float(self.cur_us.execute("SELECT gen_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-        cur_res = (cur_res * self.get_days(user) + res) / (self.get_days(user) + 1)
+        n = self.get_days(user)
+        if not n: n = 1
+        cur_res = (cur_res * n + res) / (self.get_days(user) + 1)
         self.cur_us.execute("UPDATE users SET gen_p == ? WHERE id == ?", (str(round(cur_res, 2)), user))
 
         #gen_c
@@ -250,7 +252,10 @@ class DB:
             for i in range(12):
                 cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{i+1}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
                 n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-                cur_ex_res = (cur_ex_res * n * exs_res[i]) / (n + 1)
+                if not n: n = 1
+                n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
+                if not n: n = 1
+                cur_ex_res = (cur_ex_res * n + exs_res[i]) / (n + 1)
                 self.cur_us.execute(f"UPDATE users SET ex_{i+1}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))  
 
         else:
