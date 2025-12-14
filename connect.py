@@ -95,9 +95,12 @@ class DB:
     
     #Добавление пользователя
     def add_user(self, user):
+        us = user.username
+        if us:
+            us = '@' + us
         self.cur_us.execute("INSERT INTO users VALUES( \
                             ?,        ?,             ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,     ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?,       ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?)",
-                            (user.id, '@'+user.username, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
+                            (user.id, us, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
                             #id,      username,      name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c, ex_1_c, ex_2_c, ex_3_c, ex_4_c, ex_5_c, ex_6_c, ex_7_c, ex_8_c, ex_9_c, ex_10_c, ex_11_c, ex_12_c, ex_1_p, ex_2_p, ex_3_p, ex_4_p, ex_5_p, ex_6_p, ex_7_p, ex_8_p, ex_9_p, ex_10_p, ex_11_p, ex_12_p
         self.db_us.commit()
 
