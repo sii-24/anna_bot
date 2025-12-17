@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+
+PROJECT_DIR="/home/sii/anna_bot"   # путь к каталогу с git-репозиторием
+
+echo "Проверяю рабочую директорию..."
+
+if [ "$PWD" != "$PROJECT_DIR" ]; then
+    echo "Текущая директория: $PWD"
+    echo "Перехожу в $PROJECT_DIR"
+
+    if [ ! -d "$PROJECT_DIR" ]; then
+        echo "Ошибка: директория $PROJECT_DIR не существует"
+        exit 1
+    fi
+
+    cd "$PROJECT_DIR"
+fi
+
+echo "Текущая рабочая директория: $(pwd)"
+
+echo "Останавливаю сервис..."
+sudo systemctl stop anna_bot
+
+echo "Обновляю репозиторий..."
+git pull
+
+echo "Запускаю сервис..."
+sudo systemctl start anna_bot
+
+echo "Статус сервиса:"
+systemctl status anna_bot --no-pager
