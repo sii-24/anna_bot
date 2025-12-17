@@ -33,13 +33,13 @@ app = ApplicationBuilder().token(TOKEN).build()
 #Отправка задания
 app.job_queue.run_daily(
             send,
-            time=datetime.time(hour=0, minute=2, tzinfo=ZoneInfo("Europe/Moscow")),
+            time=datetime.time(hour=4, minute=2, tzinfo=ZoneInfo("Europe/Moscow")),
         )
 
 #Сброс ударного режима каждую полночь
 app.job_queue.run_daily(
             reset_streak,
-            time=datetime.time(hour=0, minute=1, tzinfo=ZoneInfo("Europe/Moscow")),
+            time=datetime.time(hour=4, minute=1, tzinfo=ZoneInfo("Europe/Moscow")),
         )
 
 #Отправка напоминаний
@@ -52,8 +52,8 @@ app.job_queue.run_daily(noti, time=datetime.time(hour=21, minute=0, tzinfo=ZoneI
 #app.job_queue.run_daily(noti, time=datetime.time(hour=22, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 1})
 app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
 #app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=15, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=30, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
-app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=45, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=1, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
+app.job_queue.run_daily(noti, time=datetime.time(hour=3, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
 #app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=50, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
 #app.job_queue.run_daily(noti, time=datetime.time(hour=23, minute=55, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 2})
 
