@@ -256,15 +256,14 @@ class DB:
                 cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{i+1}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
                 n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
                 if not n: n = 1
-                n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-                if not n: n = 1
                 cur_ex_res = (cur_ex_res * n + exs_res[i]) / (n + 1)
                 self.cur_us.execute(f"UPDATE users SET ex_{i+1}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))  
 
         else:
             cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{ex_n}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
             n = int(self.cur_us.execute(f"SELECT ex_{ex_n}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-            cur_ex_res = (cur_ex_res * n + res) / (n+1)
+            if not n: n = 1
+            cur_ex_res = (cur_ex_res * n + res*10) / (n+10)
             self.cur_us.execute(f"UPDATE users SET ex_{ex_n}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))
 
         #ex_c
