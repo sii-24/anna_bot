@@ -6,39 +6,43 @@ from config import ADMINS
 
 
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    db = DB()
-    users = db.get_users()
-    d = []
-    for user in users:
-        u = (db.get_name(user), db.get_week_exs_count(user))
-        d.append(u)
-    d = sorted(d, key=lambda u: u[1], reverse=True)
-    text = "<b>Недельный рейтинг:</b><code>\n"
-    if len(d) < 5:
-        n = len(d)
+    if update.effective_user.id in ADMINS:
+        await full_stat(update, context)
+        return
     else:
-        n = 5
-    for i in range(n):
-        text += f"{i+1}. {d[i][0]} - {d[i][1]}\n"
-    text += "</code>\n"
-    user = update.effective_user.id
-    if db.streak(user):
-        st = "🔥"
-    else:
-        st ="⏳"
-    text += (f"<b>Твоя статистика</b>\n" +
-            f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
-            f"Cредний результат: {db.get_res(user)}%\n" +
-            f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
-            f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
-            f"Всего решено: {db.get_exs_count(user)}\n\n" +
-            f"<b>Статистика по заданиям</b><code>\n" +
-            f"№   Кол-во  Ср. рез.\n")
-    for i in zip(range(1, 13), db.get_exs_c(user), db.get_exs_p(user)):
-        text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
-    text += f"</code>"
+        db = DB()
+        users = db.get_users()
+        d = []
+        for user in users:
+            u = (db.get_name(user), db.get_week_exs_count(user))
+            d.append(u)
+        d = sorted(d, key=lambda u: u[1], reverse=True)
+        text = "<b>Недельный рейтинг:</b><code>\n"
+        if len(d) < 5:
+            n = len(d)
+        else:
+            n = 5
+        for i in range(n):
+            text += f"{i+1}. {d[i][0]} - {d[i][1]}\n"
+        text += "</code>\n"
+        user = update.effective_user.id
+        if db.streak(user):
+            st = "🔥"
+        else:
+            st ="⏳"
+        text += (f"<b>Твоя статистика</b>\n" +
+                f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
+                f"Cредний результат: {db.get_res(user)}%\n" +
+                f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
+                f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
+                f"Всего решено: {db.get_exs_count(user)}\n\n" +
+                f"<b>Статистика по заданиям</b><code>\n" +
+                f"№   Кол-во  Ср. рез.\n")
+        for i in zip(range(1, 13), db.get_exs_c(user), db.get_exs_p(user)):
+            text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
+        text += f"</code>"
 
-    await update.message.reply_html(text)
+        await update.message.reply_html(text)
 
 
 async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
