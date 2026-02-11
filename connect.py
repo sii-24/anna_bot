@@ -1,5 +1,7 @@
 import sqlite3
 
+from config import EXAM, EXAM_EXS, exams
+
 
 class DB:
 
@@ -9,64 +11,70 @@ class DB:
     cur_us = None
 
     def __init__(self):
-        self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
-        self.cur_ex = self.db_ex.cursor()
         self.db_us = sqlite3.connect("anna_bot.db")
         self.cur_us = self.db_us.cursor()
-        self.db_ex.execute('CREATE TABLE IF NOT EXISTS exs(id TEXT PRIMARY KEY, answer TEXT) STRICT')
-        self.db_us.execute('CREATE TABLE IF NOT EXISTS vars(id INT PRIMARY KEY, answer TEXT, type INT) STRICT')
+        self.db_us.execute(f'CREATE TABLE IF NOT EXISTS vars (id INT PRIMARY KEY, answer TEXT, type INT) STRICT')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id INT PRIMARY KEY, username TEXT, name TEXT, \
                             cur_var INT, streak INT, days INT, gen_p TEXT, gen_c INT, week_c INT, day_c INT, \
-                            ex_1_c INT, ex_2_c INT, ex_3_c INT, ex_4_c INT, ex_5_c INT, ex_6_c INT, ex_7_c INT, \
-                            ex_8_c INT, ex_9_c INT, ex_10_c INT, ex_11_c INT, ex_12_c INT, ex_1_p TEXT, ex_2_p TEXT, \
-                            ex_3_p TEXT, ex_4_p TEXT, ex_5_p TEXT, ex_6_p TEXT, ex_7_p TEXT, ex_8_p TEXT, \
-                            ex_9_p TEXT, ex_10_p TEXT, ex_11_p TEXT, ex_12_p TEXT) STRICT')
+                            exs_p TEXT, exs_c TEXT) STRICT')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS serv(key TEXT PRIMARY KEY, data INT) STRICT')
         try:
-            self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("ex_n", 0))
+            self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("ex_n", 1))
         except:
             ...
         try:
             self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("var_id", 1))
         except:
             ...
+        try:
+            self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("test", 0))
+        except:
+            ...
         self.db_us.commit()
-        self.db_ex.commit()
 
 
     def __del__(self):
         self.db_us.close()
-        self.db_ex.close()
 
     
     #Работа с базой заданий: автоматическое заполнение ответов 
-    def fill_ans(self):
+    def fill_ans(self, exam):
+        exam_exs = exams[exam][0]
+        base_exs = exams[exam][1]
+        self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
+        self.db_ex.execute(f'CREATE TABLE IF NOT EXISTS {exam} (id TEXT PRIMARY KEY, answer TEXT) STRICT')
+        self.cur_ex = self.db_ex.cursor()
         a = []
-        with open("resources/ans.txt") as file:
+        with open(f"resources/{exam}/ans.txt") as file:
             for line in file:
-                a.append(str(line.split()[-1]))
+                a.append(' '.join(line.split()[2:]))
         k = 0
-        for i in range(1, 13):
-            for j in range(1, 51):
-                self.cur_ex.execute("INSERT INTO exs VALUES(?, ?)", (f"{i}_{j}", a[k]))
+        for i in range(1, exam_exs+1):
+            for j in range(1, base_exs+1):
+                self.cur_ex.execute(f"INSERT INTO {exam} VALUES(?, ?)", (f"{i}_{j}", a[k]))
                 k += 1
         self.db_ex.commit()
+        self.db_ex.close()
 
     
     #Добавление ответов в базу вариантов
     def add_exs(self, exs, n):
+        self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
+        self.cur_ex = self.db_ex.cursor()
         var_id = int(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("var_id", )).fetchone()[0])
         ans = []
         if n == 0:
-            for i in range(12):
-                ans.append(self.cur_ex.execute("SELECT answer FROM exs WHERE id == ?", (f"{i+1}_{exs[i]}", )).fetchone()[0])
+            for i in range(EXAM_EXS):
+                ans.append(self.cur_ex.execute(f"SELECT answer FROM {EXAM} WHERE id = ?", (f"{i+1}_{exs[i]}", )).fetchone()[0])
         else:
             for i in exs:
-                ans.append(self.cur_ex.execute("SELECT answer FROM exs WHERE id == ?", (f"{n}_{i}", )).fetchone()[0])
+                ans.append(self.cur_ex.execute(f"SELECT answer FROM {EXAM} WHERE id = ?", (f"{n}_{i}", )).fetchone()[0])
         ans = "; ".join(ans)
         self.cur_us.execute("INSERT INTO vars VALUES(?, ?, ?)", (var_id, ans, int(n)))
         self.cur_us.execute("UPDATE serv SET data == ? WHERE key == ?", (var_id + 1, "var_id"))
         self.db_us.commit()
+        self.db_ex.commit()
+        self.db_ex.close()
         return var_id
 
 
@@ -75,13 +83,23 @@ class DB:
         res = int(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("ex_n", )).fetchone()[0])
         return res
     
+    def test(self):
+        return not bool(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("test", )).fetchone()[0])
+    
 
     #Обновление текущего номера заданий
     def update_ex_n(self):
-        ex_n = int(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("ex_n", )).fetchone()[0]) + 1
-        if ex_n == 15:
-            ex_n = 1
-        self.cur_us.execute("UPDATE serv SET data == ? WHERE key == ?", (ex_n, "ex_n"))
+        ex_n = int(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("ex_n", )).fetchone()[0])
+        test = int(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("test", )).fetchone()[0])
+        if test:
+            ex_n += 1
+            if ex_n > EXAM_EXS:
+                ex_n = 1
+        test += 1
+        if test == 7:
+            test = 0
+        self.cur_us.execute("UPDATE serv SET DATA = ? WHERE key = ?", (test, "test", ))    
+        self.cur_us.execute("UPDATE serv SET data = ? WHERE key = ?", (ex_n, "ex_n"))
         self.db_us.commit()
 
 
@@ -99,11 +117,14 @@ class DB:
         if us:
             us = '@' + us
         self.cur_us.execute("INSERT INTO users VALUES( \
-                            ?,        ?,             ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,     ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?,       ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,      ?,       ?,       ?)",
-                            (user.id, us, user.first_name, 1,       0,      0,    "100", 0,     0,      0,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,       0,       0,      "100",   "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",  "100",   "100",   "100"))
-                            #id,      username,      name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c, ex_1_c, ex_2_c, ex_3_c, ex_4_c, ex_5_c, ex_6_c, ex_7_c, ex_8_c, ex_9_c, ex_10_c, ex_11_c, ex_12_c, ex_1_p, ex_2_p, ex_3_p, ex_4_p, ex_5_p, ex_6_p, ex_7_p, ex_8_p, ex_9_p, ex_10_p, ex_11_p, ex_12_p
+                            ?,        ?,        ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,      ?,                ?)", 
+                            (user.id, us,       user.first_name, 1,       0,      0,    "100", 0,     0,      0,      "100 "*EXAM_EXS,  "0 "*EXAM_EXS)) 
+                            #id,      username, name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c,  exs_p,            exs_c
         self.db_us.commit()
 
+    def del_user(self, user):
+        self.cur_us.execute("DELETE FROM users WHERE id == ?", (user, )).fetchone()[0]
+        self.db_us.commit()
 
     #Получение списка всех пользователей
     def get_users(self):
@@ -187,17 +208,13 @@ class DB:
 
     #Получение процентов по заданиям
     def get_exs_p(self, user):
-        res = []
-        for i in range(1, 13):
-            res.append(self.cur_us.execute(f"SELECT ex_{i}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
+        res = [float(i) for i in self.cur_us.execute("SELECT exs_p FROM users WHERE id == ?", (user, )).fetchone()[0].split()]
         return res
 
 
     #Получение количества по заданиям
     def get_exs_c(self, user):
-        res = []
-        for i in range(1, 13):
-            res.append(str(self.cur_us.execute(f"SELECT ex_{i}_c FROM users WHERE id == ?", (user, )).fetchone()[0]))
+        res = [int(i) for i in self.cur_us.execute("SELECT exs_c FROM users WHERE id == ?", (user, )).fetchone()[0].split()]
         return res
 
 
@@ -219,6 +236,8 @@ class DB:
 
     #Добавление результатов в базу и ужасно длинная обработка статистики
     def add_res(self, user, res, k, exs_res=None):
+        n = self.get_days(user)
+        if not n: n = 1
 
         cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id == ?", (user, )).fetchone()[0])
         ex_n = int(self.cur_us.execute("SELECT type FROM vars WHERE id == ?", (cur_var, )).fetchone()[0])
@@ -233,8 +252,6 @@ class DB:
 
         #gen_p
         cur_res = float(self.cur_us.execute("SELECT gen_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-        n = self.get_days(user)
-        if not n: n = 1
         cur_res = (cur_res * n + res) / (self.get_days(user) + 1)
         self.cur_us.execute("UPDATE users SET gen_p == ? WHERE id == ?", (str(round(cur_res, 2)), user))
 
@@ -250,29 +267,18 @@ class DB:
         day_c = int(self.cur_us.execute("SELECT day_c FROM users WHERE id == ?", (user, )).fetchone()[0])
         self.cur_us.execute("UPDATE users SET day_c == ? WHERE id == ?", (day_c+k, user))
 
-        #ex_p
+        #exs_p and exs_c
+        exs_p = [float(i) for i in self.cur_us.execute("SELECT exs_p FROM users WHERE id = ?", (user, )).fetchone()[0].split()]
+        exs_c = [int(i) for i in self.cur_us.execute("SELECT exs_c FROM users WHERE id = ?", (user, )).fetchone()[0].split()] 
         if exs_res:
-            for i in range(12):
-                cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{i+1}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-                n = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-                if not n: n = 1
-                cur_ex_res = (cur_ex_res * n + exs_res[i]) / (n + 1)
-                self.cur_us.execute(f"UPDATE users SET ex_{i+1}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))  
-
+            for i in range(len(exs_c)):
+                exs_p[i] = (exs_p[i] * n + exs_res[i]) / (n + 1)
+                exs_c[i] += 1
         else:
-            cur_ex_res = float(self.cur_us.execute(f"SELECT ex_{ex_n}_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-            n = int(self.cur_us.execute(f"SELECT ex_{ex_n}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
             if not n: n = 1
-            cur_ex_res = (cur_ex_res * n + res*10) / (n+10)
-            self.cur_us.execute(f"UPDATE users SET ex_{ex_n}_p == ? WHERE id == ?", (str(round(cur_ex_res, 2)), user))
-
-        #ex_c
-        if exs_res:
-            for i in range(12):
-                one_ex_count = int(self.cur_us.execute(f"SELECT ex_{i+1}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-                self.cur_us.execute(f"UPDATE users SET ex_{i+1}_c == ? WHERE id == ?", (one_ex_count+exs_res[i], user))
-        else:
-            one_ex_count = int(self.cur_us.execute(f"SELECT ex_{ex_n}_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-            self.cur_us.execute(f"UPDATE users SET ex_{ex_n}_c == ? WHERE id == ?", (one_ex_count+k, user))
+            exs_p[ex_n] = (exs_p[ex_n] * n + res*k) / (n+k)
+            exs_c[ex_n] += k
+        self.cur_us.execute(f"UPDATE users SET exs_p = ? WHERE id = ?", (' '.join([str(round(i, 2)) for i in exs_p]), user)) 
+        self.cur_us.execute(f"UPDATE users SET exs_c = ? WHERE id = ?", (' '.join([str(i) for i in exs_c]), user)) 
 
         self.db_us.commit()
