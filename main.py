@@ -18,16 +18,16 @@ from mailing import mailing_handler
 app = ApplicationBuilder().token(TOKEN).build()
 
 
-app.job_queue.run_repeating(
-            send,
-            interval=15
-        )
-
-app.job_queue.run_repeating(
-            reset_streak,
-            interval=15,
-            first=17
-        )
+#app.job_queue.run_repeating(
+#            send,
+#            interval=15
+#        )
+#
+#app.job_queue.run_repeating(
+#            reset_streak,
+#            interval=15,
+#            first=17
+#        )
 
 
 #Отправка задания
