@@ -2,7 +2,7 @@ from telegram.ext import ContextTypes
 from telegram import Update
 
 from connect import DB
-from stati import stat
+from config import EXAM_EXS, EXS_COUNT
 
 
 async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -16,18 +16,20 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg = "Результат: "
         k = 0
         for i in range(len(us_ans)):
-            if us_ans[i] == cor_ans[i]:
+            ca = [a.strip() for a in cor_ans[i].split('|')]
+            if us_ans[i].strip().lower() in ca or \
+            ''.join(us_ans[i].strip().lower().split()) in ca:
                 k += 1
                 msg += f"{i+1} "
-                exs_res.append(1)
+                exs_res.append(100)
             else:
                 msg += f"<u>{i+1}</u> "
                 exs_res.append(0)
         res = k/len(cor_ans)*100
 
-        if len(cor_ans) == 12:
+        if len(cor_ans) == EXAM_EXS:
             db.add_res(user, res, k, exs_res)
-        elif len(cor_ans) == 10:
+        elif len(cor_ans) == EXS_COUNT:
             db.add_res(user, res, k)
             
         msg += f" - {k}/{len(cor_ans)} ({round(res, 2)}%)"
@@ -40,8 +42,6 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
                f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
                f"Всего решено: {db.get_exs_count(user)}")
         await update.message.reply_html(msg)
-        if db.get_ex_n() % 7 == 0:
-            await stat(update, context)
 
     else:
         msg = "Некорректные данные! Чтобы пропустить задание поставьте прочерк вместо ответа"

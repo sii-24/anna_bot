@@ -7,7 +7,7 @@ from config import TOKEN
 from send import send, rand_var, send_manual
 from check import check
 from noti import noti
-from stati import stat, full_stat
+from stati import stat
 from start import start
 from reset_streak import reset_streak
 from set_name import set_name
@@ -18,16 +18,16 @@ from mailing import mailing_handler
 app = ApplicationBuilder().token(TOKEN).build()
 
 
-#app.job_queue.run_repeating(
-#            send,
-#            interval=5
-#        )
-#
-#app.job_queue.run_repeating(
-#            reset_streak,
-#            interval=10,
-#            first=58
-#        )
+app.job_queue.run_repeating(
+            send,
+            interval=15
+        )
+
+app.job_queue.run_repeating(
+            reset_streak,
+            interval=15,
+            first=17
+        )
 
 
 #Отправка задания
@@ -43,7 +43,7 @@ app.job_queue.run_daily(
         )
 
 #Отправка напоминаний
-app.job_queue.run_daily(noti, time=datetime.time(hour=6, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
+#app.job_queue.run_daily(noti, time=datetime.time(hour=6, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
 #app.job_queue.run_daily(noti, time=datetime.time(hour=12, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
 app.job_queue.run_daily(noti, time=datetime.time(hour=15, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 0})
 app.job_queue.run_daily(noti, time=datetime.time(hour=18, minute=0, tzinfo=ZoneInfo("Europe/Moscow")), data={"t": 1})
@@ -59,11 +59,10 @@ app.job_queue.run_daily(noti, time=datetime.time(hour=3, minute=0, tzinfo=ZoneIn
 
 
 #Запрос случайно сформированного варианта
-app.add_handler(CommandHandler("rand_var", rand_var))
+#app.add_handler(CommandHandler("rand_var", rand_var))
 
 #Статистика пользователя
 app.add_handler(CommandHandler("stat", stat))
-app.add_handler(CommandHandler("full_stat", full_stat))
 app.add_handler(CommandHandler("send", send_manual))
 
 #Рассылка

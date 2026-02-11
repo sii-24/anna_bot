@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from connect import DB
-from config import ADMINS
+from config import ADMINS, EXAM_EXS
 
 
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -38,7 +38,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Всего решено: {db.get_exs_count(user)}\n\n" +
                 f"<b>Статистика по заданиям</b><code>\n" +
                 f"№   Кол-во  Ср. рез.\n")
-        for i in zip(range(1, 13), db.get_exs_c(user), db.get_exs_p(user)):
+        for i in zip(range(1, EXAM_EXS+1), db.get_exs_c(user), db.get_exs_p(user)):
             text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
         text += f"</code>"
 
@@ -79,7 +79,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Всего решено: {u[5]}\n\n" +
             f"<b>Статистика по заданиям</b><code>\n" +
             f"№   Кол-во  Ср. рез.\n")
-        for i in zip(range(1, 13), u[6], u[7]):
+        for i in zip(range(1, EXAM_EXS), u[6], u[7]):
             text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
         text += f"</code>"
 

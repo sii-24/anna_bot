@@ -9,8 +9,8 @@ from config import ADMINS
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    text = "Привет!\nЭто бот для тренировки теста из профмата.\nТеперь ты в ещё одном рабстве! Поздравляю!\n" \
-           "Чтобы выжить в этой игре, каждый день решай задания и не забывай присылать мне ответы до полуночи," \
+    text = "Привет!\nЭто бот для тренировки тестовых заданий ЕГЭ.\nТеперь ты в ещё одном рабстве! Поздравляю!\n" \
+           "Чтобы выжить в этой игре, каждый день решай задания и не забывай присылать мне ответы до 4 утра," \
            " а не то превратишься в тыкву)"
     
     db = DB()
@@ -23,5 +23,5 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("Пользователь уже существует")
 
     await update.message.reply_text(text)
-    await rand_var(update, context)
+    #await rand_var(update, context)
     
