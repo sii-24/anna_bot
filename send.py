@@ -118,9 +118,9 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     db = DB()
     cur_var = db.add_exs(exs, 0)
     users = db.get_users()
-    media = []
     n = 0
     while (EXAM_EXS - n) > 10:
+        media = []
         for i in range(10):
             media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+1}/ex{exs[i]}.png", "rb")))
             n += 1
@@ -134,8 +134,9 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
                 await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)}\n{str(e)}")
 
     media = [InputMediaPhoto(media=open(f"resources/{EXAM}/{n+1}/ex{exs[n]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
-    for i in range(1, EXAM_EXS - n):
-        media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+i}/ex{exs[n+i]}.png", "rb")))
+    n += 1
+    for i in range(EXAM_EXS - n):
+        media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+i+1}/ex{exs[n+i]}.png", "rb")))
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
     file_ids = [m.photo[-1].file_id for m in t]
     media = [InputMediaPhoto(media=file_ids[0], caption=msg, parse_mode='HTML')]
