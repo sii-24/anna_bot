@@ -2,7 +2,8 @@
 
 set -e
 
-PROJECT_DIR="/home/sii/anna_bot"   # путь к каталогу с git-репозиторием
+BOT_NAME="anna_bot"
+PROJECT_DIR="/home/sii/$BOT_NAME"   # путь к каталогу с git-репозиторием
 
 echo "Проверяю рабочую директорию..."
 
@@ -21,13 +22,13 @@ fi
 echo "Текущая рабочая директория: $(pwd)"
 
 echo "Останавливаю сервис..."
-sudo systemctl stop anna_bot
+sudo systemctl stop $BOT_NAME
 
 echo "Обновляю репозиторий..."
 git pull
 
 echo "Запускаю сервис..."
-sudo systemctl start anna_bot
+sudo systemctl start $BOT_NAME
 
 echo "Статус сервиса:"
-systemctl status anna_bot --no-pager
+systemctl status $BOT_NAME --no-pager

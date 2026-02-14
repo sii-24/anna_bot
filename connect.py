@@ -61,7 +61,7 @@ class DB:
     def add_exs(self, exs, n):
         self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
         self.cur_ex = self.db_ex.cursor()
-        var_id = int(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("var_id", )).fetchone()[0])
+        var_id = int(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("var_id", )).fetchone()[0])
         ans = []
         if n == 0:
             for i in range(EXAM_EXS):
@@ -71,7 +71,7 @@ class DB:
                 ans.append(self.cur_ex.execute(f"SELECT answer FROM {EXAM} WHERE id = ?", (f"{n}_{i}", )).fetchone()[0])
         ans = "; ".join(ans)
         self.cur_us.execute("INSERT INTO vars VALUES(?, ?, ?)", (var_id, ans, int(n)))
-        self.cur_us.execute("UPDATE serv SET data == ? WHERE key == ?", (var_id + 1, "var_id"))
+        self.cur_us.execute("UPDATE serv SET data = ? WHERE key = ?", (var_id+1, "var_id"))
         self.db_us.commit()
         self.db_ex.commit()
         self.db_ex.close()
@@ -80,11 +80,11 @@ class DB:
 
     #Получение номера текущего типа заданий
     def get_ex_n(self):
-        res = int(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("ex_n", )).fetchone()[0])
+        res = int(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("ex_n", )).fetchone()[0])
         return res
     
     def test(self):
-        return not bool(self.cur_us.execute("SELECT data FROM serv WHERE key == ?", ("test", )).fetchone()[0])
+        return not bool(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("test", )).fetchone()[0])
     
 
     #Обновление текущего номера заданий
@@ -98,16 +98,16 @@ class DB:
         test += 1
         if test == 7:
             test = 0
-        self.cur_us.execute("UPDATE serv SET DATA = ? WHERE key = ?", (test, "test", ))    
+        self.cur_us.execute("UPDATE serv SET DATA = ? WHERE key = ?", (test, "test"))    
         self.cur_us.execute("UPDATE serv SET data = ? WHERE key = ?", (ex_n, "ex_n"))
         self.db_us.commit()
 
 
     #Получение ответов для конкретного пользователя
     def get_answers(self, user):
-        cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id == ?", (user, )).fetchone()[0])
+        cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id = ?", (user, )).fetchone()[0])
         if cur_var == -1: return None
-        res = self.cur_us.execute("SELECT answer FROM vars WHERE id == ?", (cur_var, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT answer FROM vars WHERE id = ?", (cur_var, )).fetchone()[0]
         return res
     
     
@@ -123,7 +123,7 @@ class DB:
         self.db_us.commit()
 
     def del_user(self, user):
-        self.cur_us.execute("DELETE FROM users WHERE id == ?", (user, )).fetchone()[0]
+        self.cur_us.execute("DELETE FROM users WHERE id = ?", (user, )).fetchone()[0]
         self.db_us.commit()
 
     #Получение списка всех пользователей
@@ -134,25 +134,25 @@ class DB:
 
     #Получение ника пользователя
     def get_username(self, user):
-        res = self.cur_us.execute("SELECT username FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT username FROM users WHERE id = ?", (user, )).fetchone()[0]
         return str(res)
     
 
     #Получение имени пользователя
     def get_name(self, user):
-        res = self.cur_us.execute("SELECT name FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT name FROM users WHERE id = ?", (user, )).fetchone()[0]
         return str(res)
     
 
     #Установка имени пользователя
     def set_name(self, user, name):
-        self.cur_us.execute("UPDATE users SET name == ? WHERE id == ?", (name, user))
+        self.cur_us.execute("UPDATE users SET name = ? WHERE id = ?", (name, user))
         self.db_us.commit()
 
 
     #Установка текущего варианта пользователя
     def set_cur_var(self, user, var):
-        self.cur_us.execute("UPDATE users SET cur_var == ? WHERE id == ?", (var, user))
+        self.cur_us.execute("UPDATE users SET cur_var = ? WHERE id = ?", (var, user))
         self.db_us.commit()
 
 
@@ -160,10 +160,10 @@ class DB:
     def reset_streak(self):
         users = self.get_users()
         for user in users:
-            streak = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
+            streak = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
             if streak == 0:
-                self.cur_us.execute("UPDATE users SET days == ? WHERE id == ?", (0, user))
-            self.cur_us.execute("UPDATE users SET streak == ? WHERE id == ?", (0, user))
+                self.cur_us.execute("UPDATE users SET days == ? WHERE id = ?", (0, user))
+            self.cur_us.execute("UPDATE users SET streak == ? WHERE id = ?", (0, user))
         self.db_us.commit()
         self.reset_day_exs_count()
         if self.get_ex_n() % 7 == 0:
@@ -172,49 +172,49 @@ class DB:
 
     #Активность ударного режима сегодня
     def streak(self, user):
-        res = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
         return int(res)
     
 
     #Получение количества дней в ударном режиме
     def get_days(self, user):
-        res = int(self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0])
+        res = int(self.cur_us.execute("SELECT days FROM users WHERE id = ?", (user, )).fetchone()[0])
         return int(res)
     
 
     #Получение общего среднего результата
     def get_res(self, user):
-        res = self.cur_us.execute("SELECT gen_p FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT gen_p FROM users WHERE id = ?", (user, )).fetchone()[0]
         return res
         
 
     #Получение общего количества решенных заданий
     def get_exs_count(self, user):
-        res = self.cur_us.execute("SELECT gen_c FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT gen_c FROM users WHERE id = ?", (user, )).fetchone()[0]
         return int(res)
     
 
     #Получение количества решенных за неделю заданий
     def get_week_exs_count(self, user):
-        res = self.cur_us.execute("SELECT week_c FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT week_c FROM users WHERE id = ?", (user, )).fetchone()[0]
         return int(res)
     
 
     #Получение количества решенных за день заданий
     def get_day_exs_count(self, user):
-        res = self.cur_us.execute("SELECT day_c FROM users WHERE id == ?", (user, )).fetchone()[0]
+        res = self.cur_us.execute("SELECT day_c FROM users WHERE id = ?", (user, )).fetchone()[0]
         return int(res)
     
 
     #Получение процентов по заданиям
     def get_exs_p(self, user):
-        res = [float(i) for i in self.cur_us.execute("SELECT exs_p FROM users WHERE id == ?", (user, )).fetchone()[0].split()]
+        res = [float(i) for i in self.cur_us.execute("SELECT exs_p FROM users WHERE id = ?", (user, )).fetchone()[0].split()]
         return res
 
 
     #Получение количества по заданиям
     def get_exs_c(self, user):
-        res = [int(i) for i in self.cur_us.execute("SELECT exs_c FROM users WHERE id == ?", (user, )).fetchone()[0].split()]
+        res = [int(i) for i in self.cur_us.execute("SELECT exs_c FROM users WHERE id = ?", (user, )).fetchone()[0].split()]
         return res
 
 
@@ -222,7 +222,7 @@ class DB:
     def reset_week_exs_count(self):
         users = self.get_users()
         for user in users:
-            self.cur_us.execute("UPDATE users SET week_c == ? WHERE id == ?", (0, user))
+            self.cur_us.execute("UPDATE users SET week_c = ? WHERE id = ?", (0, user))
         self.db_us.commit()
 
 
@@ -230,7 +230,7 @@ class DB:
     def reset_day_exs_count(self):
         users = self.get_users()
         for user in users:
-            self.cur_us.execute("UPDATE users SET day_c == ? WHERE id == ?", (0, user))
+            self.cur_us.execute("UPDATE users SET day_c = ? WHERE id = ?", (0, user))
         self.db_us.commit()
  
 
@@ -239,44 +239,46 @@ class DB:
         n = self.get_days(user)
         if not n: n = 1
 
-        cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id == ?", (user, )).fetchone()[0])
-        ex_n = int(self.cur_us.execute("SELECT type FROM vars WHERE id == ?", (cur_var, )).fetchone()[0])
-        self.cur_us.execute("UPDATE users SET cur_var == ? WHERE id == ?", (-1, user))
+        cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id = ?", (user, )).fetchone()[0])
+        ex_n = int(self.cur_us.execute("SELECT type FROM vars WHERE id = ?", (cur_var, )).fetchone()[0])
+        self.cur_us.execute("UPDATE users SET cur_var == ? WHERE id = ?", (-1, user))
 
         #streak + days
-        streak = self.cur_us.execute("SELECT streak FROM users WHERE id == ?", (user, )).fetchone()[0]
+        streak = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
         if streak == 0:
-            self.cur_us.execute("UPDATE users SET streak == ? WHERE id == ?", (1, user))
-            days = int(self.cur_us.execute("SELECT days FROM users WHERE id == ?", (user, )).fetchone()[0])
-            self.cur_us.execute("UPDATE users SET days == ? WHERE id == ?", (days+1, user))
-
-        #gen_p
-        cur_res = float(self.cur_us.execute("SELECT gen_p FROM users WHERE id == ?", (user, )).fetchone()[0])
-        cur_res = (cur_res * n + res) / (self.get_days(user) + 1)
-        self.cur_us.execute("UPDATE users SET gen_p == ? WHERE id == ?", (str(round(cur_res, 2)), user))
+            self.cur_us.execute("UPDATE users SET streak = 1 WHERE id = ?", (user, ))
+            days = int(self.cur_us.execute("SELECT days FROM users WHERE id = ?", (user, )).fetchone()[0])
+            self.cur_us.execute("UPDATE users SET days = ? WHERE id = ?", (days+1, user))
 
         #gen_c
-        exs_count = int(self.cur_us.execute("SELECT gen_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-        self.cur_us.execute("UPDATE users SET gen_c == ? WHERE id == ?", (exs_count+k, user))
+        exs_count = int(self.cur_us.execute("SELECT gen_c FROM users WHERE id = ?", (user, )).fetchone()[0])
+        self.cur_us.execute("UPDATE users SET gen_c = ? WHERE id = ?", (exs_count+k, user))
+
+        #gen_p
+        cur_res = float(self.cur_us.execute("SELECT gen_p FROM users WHERE id = ?", (user, )).fetchone()[0])
+        cur_res = (cur_res * exs_count + res) / (exs_count + 1)
+        self.cur_us.execute("UPDATE users SET gen_p = ? WHERE id = ?", (str(round(cur_res, 2)), user))
 
         #week_c
-        week_c = int(self.cur_us.execute("SELECT week_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-        self.cur_us.execute("UPDATE users SET week_c == ? WHERE id == ?", (week_c+k, user))
+        week_c = int(self.cur_us.execute("SELECT week_c FROM users WHERE id = ?", (user, )).fetchone()[0])
+        self.cur_us.execute("UPDATE users SET week_c = ? WHERE id = ?", (week_c+k, user))
 
         #day_c
-        day_c = int(self.cur_us.execute("SELECT day_c FROM users WHERE id == ?", (user, )).fetchone()[0])
-        self.cur_us.execute("UPDATE users SET day_c == ? WHERE id == ?", (day_c+k, user))
+        day_c = int(self.cur_us.execute("SELECT day_c FROM users WHERE id = ?", (user, )).fetchone()[0])
+        self.cur_us.execute("UPDATE users SET day_c = ? WHERE id = ?", (day_c+k, user))
 
         #exs_p and exs_c
         exs_p = [float(i) for i in self.cur_us.execute("SELECT exs_p FROM users WHERE id = ?", (user, )).fetchone()[0].split()]
         exs_c = [int(i) for i in self.cur_us.execute("SELECT exs_c FROM users WHERE id = ?", (user, )).fetchone()[0].split()] 
         if exs_res:
             for i in range(len(exs_c)):
-                exs_p[i] = (exs_p[i] * n + exs_res[i]) / (n + 1)
-                exs_c[i] += 1
+                exs = exs_c[i] if exs_c[i] > 0 else 1
+                exs_p[i] = (exs_p[i] * exs + exs_res[i]) / (exs + 1)
+                if exs_res[i]:
+                    exs_c[i] += 1
         else:
-            if not n: n = 1
-            exs_p[ex_n] = (exs_p[ex_n] * n + res*k) / (n+k)
+            exs = exs_c[ex_n] if exs_c[ex_n] > 0 else 1
+            exs_p[ex_n] = (exs_p[ex_n] * exs + res*k) / (exs+k)
             exs_c[ex_n] += k
         self.cur_us.execute(f"UPDATE users SET exs_p = ? WHERE id = ?", (' '.join([str(round(i, 2)) for i in exs_p]), user)) 
         self.cur_us.execute(f"UPDATE users SET exs_c = ? WHERE id = ?", (' '.join([str(i) for i in exs_c]), user)) 
