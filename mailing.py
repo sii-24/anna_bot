@@ -1,5 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
+import telegram
 
 from connect import DB
 from config import ADMINS
@@ -51,7 +52,12 @@ async def get_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Неподдерживаемый тип сообщения!")
         return ConversationHandler.END
     for user in users:
-        await cmd(user)
+        try:
+            await cmd(user)
+        except telegram.error.BadRequest as e:
+            await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)}\n{str(e)}")
+            if str(e) == 'Failed to send message #1 with the error message "user_is_blocked"':
+                db.del_user(user)
     await update.message.reply_text("Рассылка совершена!")
     return ConversationHandler.END
 

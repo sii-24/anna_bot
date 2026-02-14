@@ -9,16 +9,15 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = DB()
     user = update.effective_user.id
     ans = db.get_answers(user)
-    us_ans = update.message.text.strip(" ;,.").split(";")
+    us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").split(";")]
     if ans and len(ans.split(";")) == len(us_ans):
-        cor_ans = ans.split(";")
+        cor_ans = [i.strip() for i in ans.split(";")]
         exs_res = []
         msg = "Результат: "
         k = 0
         for i in range(len(us_ans)):
             ca = [a.strip() for a in cor_ans[i].split('|')]
-            if us_ans[i].strip().lower() in ca or \
-            ''.join(us_ans[i].strip().lower().split()) in ca:
+            if us_ans[i] in ca or us_ans[i].replace(' ', '') in ca:
                 k += 1
                 msg += f"{i+1} "
                 exs_res.append(100)
@@ -32,11 +31,16 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif len(cor_ans) == EXS_COUNT:
             db.add_res(user, res, k)
             
-        msg += f" - {k}/{len(cor_ans)} ({round(res, 2)}%)"
-        msg += f"\nВерные ответы: <tg-spoiler>{ans}</tg-spoiler>"
-        t = ["\nТебе есть куда стремиться!", "\nМолодец! Так держать!",]
+        msg += f"- {k}/{len(cor_ans)} ({round(res, 2)}%)\n"
+        t = ["Тебе есть куда стремиться!", "Молодец! Так держать!"]
         msg += t[int(res > 70)]
-        msg += (f"\n\nУдарный режим: {db.get_days(user)} 🔥\n" +
+
+        msg += "\n\nВерные ответы: <tg-spoiler>\n"
+        for i in range(len(cor_ans)):
+            msg += f"{i+1}. {cor_ans[i]}\n"
+        msg += "</tg-spoiler>"
+
+        msg += (f"\nУдарный режим: {db.get_days(user)} 🔥\n" +
                f"Средний балл: {db.get_res(user)}\n" +
                f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
