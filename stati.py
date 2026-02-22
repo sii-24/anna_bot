@@ -74,7 +74,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for u in sorted(d, key=lambda u: u[6], reverse=True):
         text += (f"\n\n<b>{u[0]}</b>\n" +
             f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
-            f"Запас заморозки: {u[2]}\n" +
+            f"Запас заморозок: {u[2]}\n" +
             f"Cредний результат: {u[3]}%\n" +
             f"Сегодня решено: {u[4]}\n" +
             f"Решено за неделю: {u[5]}\n" +

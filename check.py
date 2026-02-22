@@ -45,7 +45,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg += "</tg-spoiler>"
 
         msg += (f"\nУдарный режим: {db.get_days(user)} 🔥\n" +
-               f"Запас заморозки: {db.get_freeze(user)}\n" +
+               f"Запас заморозок: {db.get_freeze(user)}\n" +
                f"Средний балл: {db.get_res(user)}\n" +
                f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                f"Решено за неделю: {db.get_week_exs_count(user)}\n" +

@@ -118,7 +118,7 @@ class DB:
             us = '@' + us
         self.cur_us.execute("INSERT INTO users VALUES( \
                             ?,        ?,        ?,               ?,       ?,      ?,      ?,    ?,     ?,     ?,      ?,      ?,                ?)", 
-                            (user.id, us,       user.first_name, 1,       1,      0,      0,    "100", 0,     0,      0,      "100 "*EXAM_EXS,  "0 "*EXAM_EXS)) 
+                            (user.id, us,       user.first_name, 1,       1,      1,      0,    "100", 0,     0,      0,      "100 "*EXAM_EXS,  "0 "*EXAM_EXS)) 
                             #id,      username, name,            cur_var, streak, freeze, days, gen_p, gen_c, week_c, day_c,  exs_p,            exs_c
         self.db_us.commit()
 
