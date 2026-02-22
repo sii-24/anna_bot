@@ -1,5 +1,6 @@
 config.py
 anna_bot.db
+upgrade
 .vscode
 test.py
 .DS_Store

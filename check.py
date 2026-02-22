@@ -9,9 +9,9 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = DB()
     user = update.effective_user.id
     ans = db.get_answers(user)
-    us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").split(";")]
+    us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").replace('ё', 'е').replace(':', ';').split(';')]
     if ans and len(ans.split(";")) == len(us_ans):
-        cor_ans = [i.strip() for i in ans.split(";")]
+        cor_ans = [i.strip() for i in ans.split(';')]
         exs_res = []
         msg = "Результат: "
         k = 0
