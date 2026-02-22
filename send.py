@@ -138,6 +138,7 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     for i in range(EXAM_EXS - n):
         media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+i+1}/ex{exs[n+i]}.png", "rb")))
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
+    db.set_cur_var(users[0], cur_var)
     file_ids = [m.photo[-1].file_id for m in t]
     media = [InputMediaPhoto(media=file_ids[0], caption=msg, parse_mode='HTML')]
     for file_id in file_ids[1:]:

@@ -20,13 +20,13 @@ app = ApplicationBuilder().token(TOKEN).build()
 
 #app.job_queue.run_repeating(
 #            send,
-#            interval=40
+#            interval=20
 #        )
 #
 #app.job_queue.run_repeating(
 #            reset_streak,
-#            interval=40,
-#            first=42
+#            interval=20,
+#            first=22
 #        )
 
 

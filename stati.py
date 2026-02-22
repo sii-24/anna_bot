@@ -32,6 +32,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             st ="⏳"
         text += (f"<b>Твоя статистика</b>\n" +
                 f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
+                f"Дней заморозки: {db.get_freeze(user)} ❄️\n" +
                 f"Cредний результат: {db.get_res(user)}%\n" +
                 f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                 f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
@@ -53,7 +54,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users = db.get_users()
     d = []
     for user in users:
-        u = [db.get_name(user), db.get_days(user), db.get_res(user), db.get_day_exs_count(user), 
+        u = [db.get_name(user), db.get_days(user), db.get_freeze(user), db.get_res(user), db.get_day_exs_count(user), 
              db.get_week_exs_count(user), db.get_exs_count(user), db.get_exs_c(user), db.get_exs_p(user)]
         if db.streak(user):
             u.append("🔥")
@@ -61,25 +62,26 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             u.append("⏳")
         d.append(u)
 
-    l = sorted(d, key=lambda u: u[4], reverse=True)
+    l = sorted(d, key=lambda u: u[5], reverse=True)
     text = "<b>Недельный рейтинг:</b><code>\n"
     if len(l) < 5:
         n = len(l)
     else:
         n = 5
     for i in range(n):
-        text += f"{i+1}. {l[i][0]} - {l[i][4]}\n"
+        text += f"{i+1}. {l[i][0]} - {l[i][5]}\n"
     text += "</code>"
-    for u in sorted(d, key=lambda u: u[5], reverse=True):
+    for u in sorted(d, key=lambda u: u[6], reverse=True):
         text += (f"\n\n<b>{u[0]}</b>\n" +
             f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
-            f"Cредний результат: {u[2]}%\n" +
-            f"Сегодня решено: {u[3]}\n" +
-            f"Решено за неделю: {u[4]}\n" +
-            f"Всего решено: {u[5]}\n\n" +
+            f"Запас заморозки: {u[2]}\n" +
+            f"Cредний результат: {u[3]}%\n" +
+            f"Сегодня решено: {u[4]}\n" +
+            f"Решено за неделю: {u[5]}\n" +
+            f"Всего решено: {u[6]}\n\n" +
             f"<b>Статистика по заданиям</b><code>\n" +
             f"№   Кол-во  Ср. рез.\n")
-        for i in zip(range(1, EXAM_EXS+1), u[6], u[7]):
+        for i in zip(range(1, EXAM_EXS+1), u[7], u[8]):
             text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
         text += f"</code>"
 

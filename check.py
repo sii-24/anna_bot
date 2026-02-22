@@ -9,8 +9,12 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = DB()
     user = update.effective_user.id
     ans = db.get_answers(user)
+    if not ans:
+        msg = "Вы уже отвечали на это задание!"
+        await update.message.reply_html(msg)
+        return
     us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").replace('ё', 'е').replace(':', ';').split(';')]
-    if ans and len(ans.split(";")) == len(us_ans):
+    if len(ans.split(";")) == len(us_ans):
         cor_ans = [i.strip() for i in ans.split(';')]
         exs_res = []
         msg = "Результат: "
@@ -41,6 +45,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg += "</tg-spoiler>"
 
         msg += (f"\nУдарный режим: {db.get_days(user)} 🔥\n" +
+               f"Запас заморозки: {db.get_freeze(user)}\n" +
                f"Средний балл: {db.get_res(user)}\n" +
                f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                f"Решено за неделю: {db.get_week_exs_count(user)}\n" +

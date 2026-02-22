@@ -15,8 +15,8 @@ class DB:
         self.cur_us = self.db_us.cursor()
         self.db_us.execute(f'CREATE TABLE IF NOT EXISTS vars (id INT PRIMARY KEY, answer TEXT, type INT) STRICT')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS users(id INT PRIMARY KEY, username TEXT, name TEXT, \
-                            cur_var INT, streak INT, days INT, gen_p TEXT, gen_c INT, week_c INT, day_c INT, \
-                            exs_p TEXT, exs_c TEXT) STRICT')
+                            cur_var INT, streak INT, freeze INT, days INT, gen_p TEXT, gen_c INT, week_c INT, \
+                            day_c INT, exs_p TEXT, exs_c TEXT) STRICT')
         self.db_us.execute('CREATE TABLE IF NOT EXISTS serv(key TEXT PRIMARY KEY, data INT) STRICT')
         try:
             self.cur_us.execute("INSERT INTO serv VALUES(?, ?)", ("ex_n", 1))
@@ -117,9 +117,9 @@ class DB:
         if us:
             us = '@' + us
         self.cur_us.execute("INSERT INTO users VALUES( \
-                            ?,        ?,        ?,               ?,       ?,      ?,    ?,     ?,     ?,      ?,      ?,                ?)", 
-                            (user.id, us,       user.first_name, 1,       1,      0,    "100", 0,     0,      0,      "100 "*EXAM_EXS,  "0 "*EXAM_EXS)) 
-                            #id,      username, name,            cur_var, streak, days, gen_p, gen_c, week_c, day_c,  exs_p,            exs_c
+                            ?,        ?,        ?,               ?,       ?,      ?,      ?,    ?,     ?,     ?,      ?,      ?,                ?)", 
+                            (user.id, us,       user.first_name, 1,       1,      0,      0,    "100", 0,     0,      0,      "100 "*EXAM_EXS,  "0 "*EXAM_EXS)) 
+                            #id,      username, name,            cur_var, streak, freeze, days, gen_p, gen_c, week_c, day_c,  exs_p,            exs_c
         self.db_us.commit()
 
     def del_user(self, user):
@@ -161,8 +161,12 @@ class DB:
         users = self.get_users()
         for user in users:
             streak = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
+            freeze = self.cur_us.execute("SELECT freeze FROM users WHERE id = ?", (user, )).fetchone()[0]
             if streak == 0:
-                self.cur_us.execute("UPDATE users SET days == ? WHERE id = ?", (0, user))
+                if freeze == 0:
+                    self.cur_us.execute("UPDATE users SET days == ? WHERE id = ?", (0, user))
+                else:
+                    self.cur_us.execute("UPDATE users SET freeze == ? WHERE id = ?", (freeze-1, user))
             self.cur_us.execute("UPDATE users SET streak == ? WHERE id = ?", (0, user))
         self.db_us.commit()
         self.reset_day_exs_count()
@@ -175,6 +179,10 @@ class DB:
         res = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
         return int(res)
     
+    #Количество дней заморозки
+    def get_freeze(self, user):
+        res = self.cur_us.execute("SELECT freeze FROM users WHERE id = ?", (user, )).fetchone()[0]
+        return int(res)
 
     #Получение количества дней в ударном режиме
     def get_days(self, user):
@@ -240,15 +248,18 @@ class DB:
         if not n: n = 1
 
         cur_var = int(self.cur_us.execute("SELECT cur_var FROM users WHERE id = ?", (user, )).fetchone()[0])
-        ex_n = int(self.cur_us.execute("SELECT type FROM vars WHERE id = ?", (cur_var, )).fetchone()[0])
+        ex_n = int(self.cur_us.execute("SELECT type FROM vars WHERE id = ?", (cur_var, )).fetchone()[0]) - 1
         self.cur_us.execute("UPDATE users SET cur_var == ? WHERE id = ?", (-1, user))
 
         #streak + days
         streak = self.cur_us.execute("SELECT streak FROM users WHERE id = ?", (user, )).fetchone()[0]
+        freeze = self.cur_us.execute("SELECT freeze FROM users WHERE id = ?", (user, )).fetchone()[0]
         if streak == 0:
             self.cur_us.execute("UPDATE users SET streak = 1 WHERE id = ?", (user, ))
             days = int(self.cur_us.execute("SELECT days FROM users WHERE id = ?", (user, )).fetchone()[0])
             self.cur_us.execute("UPDATE users SET days = ? WHERE id = ?", (days+1, user))
+            if (days + 1) % 14 == 0:
+                self.cur_us.execute("UPDATE users SET freeze = ? WHERE id = ?", (freeze+1, user))
 
         #gen_c
         exs_count = int(self.cur_us.execute("SELECT gen_c FROM users WHERE id = ?", (user, )).fetchone()[0])
