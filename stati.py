@@ -2,9 +2,14 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from connect import DB
-from config import ADMINS, EXAM_EXS
+from config import ADMINS, EXAM_EXS, EXAM
 
-
+nums = {
+    "math": [str(i) for i in range(1, 13)],
+    "rus": [str(i) for i in range(1, 26)],
+    "inf": ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19-21', '22', '23', '24', '25', '26', '27'),
+    "phis": [str(i) for i in range(1, 21)],
+}
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id in ADMINS:
         await full_stat(update, context)
@@ -32,15 +37,15 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             st ="⏳"
         text += (f"<b>Твоя статистика</b>\n" +
                 f"Дней в ударном режиме: {db.get_days(user)} {st}\n" +
-                f"Дней заморозки: {db.get_freeze(user)} ❄️\n" +
+                f"Дней заморозки: {db.get_freeze(user)} \n" +
                 f"Cредний результат: {db.get_res(user)}%\n" +
                 f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                 f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
                 f"Всего решено: {db.get_exs_count(user)}\n\n" +
                 f"<b>Статистика по заданиям</b><code>\n" +
-                f"№   Кол-во  Ср. рез.\n")
-        for i in zip(range(1, EXAM_EXS+1), db.get_exs_c(user), db.get_exs_p(user)):
-            text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
+                f"№      Кол-во  Ср. рез.\n")
+        for i in zip(nums[EXAM], db.get_exs_c(user), db.get_exs_p(user)):
+            text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
         text += f"</code>"
 
         await update.message.reply_html(text)
@@ -72,17 +77,23 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"{i+1}. {l[i][0]} - {l[i][5]}\n"
     text += "</code>"
     for u in sorted(d, key=lambda u: u[6], reverse=True):
-        text += (f"\n\n<b>{u[0]}</b>\n" +
-            f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
-            f"Запас заморозок: {u[2]}\n" +
-            f"Cредний результат: {u[3]}%\n" +
-            f"Сегодня решено: {u[4]}\n" +
-            f"Решено за неделю: {u[5]}\n" +
-            f"Всего решено: {u[6]}\n\n" +
-            f"<blockquote expandable><b>Статистика по заданиям</b><code>\n" +
-            f"№   Кол-во  Ср. рез.\n")
-        for i in zip(range(1, EXAM_EXS+1), u[7], u[8]):
-            text += f"{str(i[0]).ljust(4)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
-        text += f"</code></blockquote>"
+        if u[1]:
+            text += (f"\n\n<b>{u[0]}</b>\n" +
+                f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
+                f"Запас заморозок: {u[2]}\n" +
+                f"Cредний результат: {u[3]}%\n" +
+                f"Сегодня решено: {u[4]}\n" +
+                f"Решено за неделю: {u[5]}\n" +
+                f"Всего решено: {u[6]}\n\n" +
+                f"<blockquote expandable><b>Статистика по заданиям</b><code>\n" +
+                f"№      Кол-во  Ср. рез.\n")
+            for i in zip(nums[EXAM], u[7], u[8]):
+                text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
+            text += f"</code></blockquote>"
+
+    text += "\n\n"
+    for u in sorted(d, key=lambda u: u[6], reverse=True): 
+        if not u[1]:
+            text += f"<b>{u[0]}</b>\n"
 
     await update.message.reply_html(text)
