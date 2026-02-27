@@ -41,11 +41,11 @@ class DB:
     def fill_ans(self, exam):
         exam_exs = exams[exam][0]
         base_exs = exams[exam][1]
-        self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
+        self.db_ex = sqlite3.connect("anna_bot_exs.db")
         self.db_ex.execute(f'CREATE TABLE IF NOT EXISTS {exam} (id TEXT PRIMARY KEY, answer TEXT) STRICT')
         self.cur_ex = self.db_ex.cursor()
         a = []
-        with open(f"resources/{exam}/ans.txt") as file:
+        with open(f"../anna_bot_lib/{exam}/ans.txt") as file:
             for line in file:
                 a.append(' '.join(line.split()[2:]))
         k = 0
@@ -59,7 +59,7 @@ class DB:
     
     #Добавление ответов в базу вариантов
     def add_exs(self, exs, n):
-        self.db_ex = sqlite3.connect("resources/anna_bot_exs.db")
+        self.db_ex = sqlite3.connect("anna_bot_exs.db")
         self.cur_ex = self.db_ex.cursor()
         var_id = int(self.cur_us.execute("SELECT data FROM serv WHERE key = ?", ("var_id", )).fetchone()[0])
         ans = []

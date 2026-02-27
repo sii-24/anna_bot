@@ -117,10 +117,10 @@ async def send_ex(context: ContextTypes.DEFAULT_TYPE, msg, ex_n):
     exs = []
     while len(exs) != EXS_COUNT:
         exs = list(set(random.choices(range(1, BASE_EXS+1), k=EXS_COUNT)))
-    media = [InputMediaPhoto(media=open(f"resources/{EXAM}/{ex_n}/ex{exs[0]}.png", "rb"), caption=msg, parse_mode='HTML')]
+    media = [InputMediaPhoto(media=open(f"../anna_bot_lib/{EXAM}/{ex_n}/ex{exs[0]}.png", "rb"), caption=msg, parse_mode='HTML')]
     cur_var = db.add_exs(exs, ex_n)
     for i in range(1, len(exs)):
-        media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{ex_n}/ex{exs[i]}.png", "rb")))
+        media.append(InputMediaPhoto(media=open(f"../anna_bot_lib/{EXAM}/{ex_n}/ex{exs[i]}.png", "rb")))
     users = db.get_users()
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
     db.set_cur_var(users[0], cur_var)
@@ -147,7 +147,7 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
     while (EXAM_EXS - n) > 10:
         media = []
         for i in range(10):
-            media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+1}/ex{exs[n]}.png", "rb")))
+            media.append(InputMediaPhoto(media=open(f"../anna_bot_lib/{EXAM}/{n+1}/ex{exs[n]}.png", "rb")))
             n += 1
         t = await context.bot.send_media_group(chat_id=users[0], media=media)
         file_ids = [m.photo[-1].file_id for m in t]
@@ -158,10 +158,10 @@ async def send_test(context: ContextTypes.DEFAULT_TYPE, msg):
             except telegram.error.BadRequest as e:
                 await context.bot.send_message(chat_id=ADMINS[0], text=f"Не удалось отправить пользователю:\n{db.get_username(user)} {db.get_name(user)}\n{str(e)}")
 
-    media = [InputMediaPhoto(media=open(f"resources/{EXAM}/{n+1}/ex{exs[n]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
+    media = [InputMediaPhoto(media=open(f"../anna_bot_lib/{EXAM}/{n+1}/ex{exs[n]}.png", "rb"), caption=msg, parse_mode=telegram.constants.ParseMode.HTML)]
     n += 1
     for i in range(EXAM_EXS - n):
-        media.append(InputMediaPhoto(media=open(f"resources/{EXAM}/{n+i+1}/ex{exs[n+i]}.png", "rb")))
+        media.append(InputMediaPhoto(media=open(f"../anna_bot_lib/{EXAM}/{n+i+1}/ex{exs[n+i]}.png", "rb")))
     t = await context.bot.send_media_group(chat_id=users[0], media=media)
     db.set_cur_var(users[0], cur_var)
     file_ids = [m.photo[-1].file_id for m in t]
