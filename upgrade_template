@@ -3,7 +3,7 @@
 set -e
 
 BOT_NAME="anna_bot"
-PROJECT_DIR="/home/sii/$BOT_NAME"   # путь к каталогу с git-репозиторием
+PROJECT_DIR="/home/sii/$BOT_NAME"
 
 echo ""
 echo "Останавливаю сервис..."

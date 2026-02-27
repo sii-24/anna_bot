@@ -77,7 +77,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"{i+1}. {l[i][0]} - {l[i][5]}\n"
     text += "</code>"
     for u in sorted(d, key=lambda u: u[6], reverse=True):
-        if u[1]:
+        if u[6]:
             text += (f"\n\n<b>{u[0]}</b>\n" +
                 f"Дней в ударном режиме: {u[1]} {u[-1]}\n" +
                 f"Запас заморозок: {u[2]}\n" +
@@ -91,9 +91,9 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
             text += f"</code></blockquote>"
 
-    text += "\n\n"
+    text += "\n\nПризраки:\n"
     for u in sorted(d, key=lambda u: u[6], reverse=True): 
-        if not u[1]:
-            text += f"<b>{u[0]}</b>\n"
+        if not u[6]:
+            text += f"{u[0]}\n"
 
     await update.message.reply_html(text)

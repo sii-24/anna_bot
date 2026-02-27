@@ -1,0 +1,14 @@
+[Unit]
+Description=anna_bot
+After=multi-user.target
+
+[Service]
+User=sii
+WorkingDirectory=/home/sii/anna_bot
+Type=simple
+Restart=always
+ExecStartPre=/bin/bash -c "source /home/sii/anna_bot/venv/bin/activate"
+ExecStart=/home/sii/anna_bot/venv/bin/python3 /home/sii/anna_bot/main.py
+
+[Install]
+WantedBy=multi-user.target
