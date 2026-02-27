@@ -91,7 +91,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
             text += f"</code></blockquote>"
 
-    text += "\n\n<b>Призраки:<b>\n"
+    text += "\n\n<b>Призраки:</b>\n"
     for u in sorted(d, key=lambda u: u[6], reverse=True): 
         if not u[6]:
             text += f" - {u[0]}\n"
