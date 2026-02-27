@@ -5,16 +5,18 @@ set -e
 BOT_NAME="anna_bot"
 PROJECT_DIR="/home/sii/$BOT_NAME"   # путь к каталогу с git-репозиторием
 
-$(pwd)"
-
+echo ""
 echo "Останавливаю сервис..."
 sudo systemctl stop $BOT_NAME
 
+echo ""
 echo "Обновляю репозиторий..."
 git pull
 
+echo ""
 echo "Запускаю сервис..."
 sudo systemctl start $BOT_NAME
 
+echo ""
 echo "Статус сервиса:"
 systemctl status $BOT_NAME --no-pager

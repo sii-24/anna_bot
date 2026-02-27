@@ -13,7 +13,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg = "Вы уже отвечали на это задание!"
         await update.message.reply_html(msg)
         return
-    us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").replace('ё', 'е').replace(':', ';').split(';')]
+    us_ans = [i.strip().lower() for i in update.message.text.strip(" ;,.").replace(':', ';').split(';')]
     if len(ans.split(";")) == len(us_ans):
         cor_ans = [i.strip() for i in ans.split(';')]
         exs_res = []
