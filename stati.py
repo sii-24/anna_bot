@@ -42,11 +42,11 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Сегодня решено: {db.get_day_exs_count(user)}\n" +
                 f"Решено за неделю: {db.get_week_exs_count(user)}\n" +
                 f"Всего решено: {db.get_exs_count(user)}\n\n" +
-                f"<b>Статистика по заданиям</b><code>\n" +
+                f"<blockquote expandable><b>Статистика по заданиям</b><code>\n" +
                 f"№      Кол-во  Ср. рез.\n")
         for i in zip(nums[EXAM], db.get_exs_c(user), db.get_exs_p(user)):
             text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
-        text += f"</code>"
+        text += f"</code></blockquote>"
 
         await update.message.reply_html(text)
 
@@ -91,9 +91,9 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
             text += f"</code></blockquote>"
 
-    text += "\n\nПризраки:\n"
+    text += "\n\n<b>Призраки:<b>\n"
     for u in sorted(d, key=lambda u: u[6], reverse=True): 
         if not u[6]:
-            text += f"{u[0]}\n"
+            text += f" - {u[0]}\n"
 
     await update.message.reply_html(text)

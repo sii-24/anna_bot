@@ -8,7 +8,7 @@ from send import send, rand_var, send_manual
 from check import check
 from noti import noti
 from stati import stat
-from start import start
+from start import start, help
 from reset_streak import reset_streak
 from set_name import set_name
 from support import support
@@ -74,6 +74,7 @@ app.add_handler(CommandHandler("set_name", set_name))
 app.add_handler(CommandHandler("support", support))
 
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", help))
 
 #Сюда попадают все ответы и идут на проверку
 app.add_handler(MessageHandler(filters.TEXT, check))
