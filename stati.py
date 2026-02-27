@@ -94,6 +94,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text += "\n\n<b>Призраки:</b>\n"
     for u in sorted(d, key=lambda u: u[6], reverse=True): 
         if not u[6]:
-            text += f"- {u[0]} (@{u[9]})\n"
+            us = f"({u[9]})" if u[9] != "None" else ""
+            text += f"- {u[0]} {us}\n"
 
     await update.message.reply_html(text)
