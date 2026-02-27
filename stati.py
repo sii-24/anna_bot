@@ -60,7 +60,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     d = []
     for user in users:
         u = [db.get_name(user), db.get_days(user), db.get_freeze(user), db.get_res(user), db.get_day_exs_count(user), 
-             db.get_week_exs_count(user), db.get_exs_count(user), db.get_exs_c(user), db.get_exs_p(user)]
+             db.get_week_exs_count(user), db.get_exs_count(user), db.get_exs_c(user), db.get_exs_p(user), db.get_username(user)]
         if db.streak(user):
             u.append("🔥")
         else:
@@ -94,6 +94,6 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text += "\n\n<b>Призраки:</b>\n"
     for u in sorted(d, key=lambda u: u[6], reverse=True): 
         if not u[6]:
-            text += f" - {u[0]}\n"
+            text += f"- {u[0]} (@{u[9]})\n"
 
     await update.message.reply_html(text)
