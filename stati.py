@@ -2,14 +2,9 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from connect import DB
-from config import ADMINS, EXAM_EXS, EXAM
+from config import ADMINS, EXAM_EXS, EXAM, NUMS
 
-nums = {
-    "math": [str(i) for i in range(1, 13)],
-    "rus": [str(i) for i in range(1, 26)],
-    "inf": ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19-21', '22', '23', '24', '25', '26', '27'),
-    "phis": [str(i) for i in range(1, 21)],
-}
+
 async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id in ADMINS:
         await full_stat(update, context)
@@ -44,7 +39,7 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Всего решено: {db.get_exs_count(user)}\n\n" +
                 f"<blockquote expandable><b>Статистика по заданиям</b><code>\n" +
                 f"№      Кол-во  Ср. рез.\n")
-        for i in zip(nums[EXAM], db.get_exs_c(user), db.get_exs_p(user)):
+        for i in zip(NUMS[EXAM], db.get_exs_c(user), db.get_exs_p(user)):
             text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {(str(i[2]) + '%').ljust(5)}\n"
         text += f"</code></blockquote>"
 
@@ -87,7 +82,7 @@ async def full_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Всего решено: {u[6]}\n\n" +
                 f"<blockquote expandable><b>Статистика по заданиям</b><code>\n" +
                 f"№      Кол-во  Ср. рез.\n")
-            for i in zip(nums[EXAM], u[7], u[8]):
+            for i in zip(NUMS, u[7], u[8]):
                 text += f"{str(i[0]).ljust(7)}{str(i[1]).ljust(5)}   {str(i[2]).ljust(5)}%\n"
             text += f"</code></blockquote>"
 

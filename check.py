@@ -2,7 +2,7 @@ from telegram.ext import ContextTypes
 from telegram import Update
 
 from connect import DB
-from config import EXAM_EXS, EXS_COUNT
+from config import EXAM_EXS, EXS_COUNT, NUMS
 
 
 async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -23,10 +23,10 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ca = [a.strip() for a in cor_ans[i].split('|')]
             if us_ans[i] in ca or us_ans[i].replace(' ', '') in ca:
                 k += 1
-                msg += f"{i+1} "
+                msg += f"{NUMS[i]} "
                 exs_res.append(100)
             else:
-                msg += f"<u>{i+1}</u> "
+                msg += f"<u>{NUMS[i]}</u> "
                 exs_res.append(0)
         res = k/len(cor_ans)*100
 
@@ -41,7 +41,7 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         msg += "\n\nВерные ответы: <tg-spoiler>\n"
         for i in range(len(cor_ans)):
-            msg += f"{i+1}. {cor_ans[i]}\n"
+            msg += f"{NUMS[i]}. {cor_ans[i]}\n"
         msg += "</tg-spoiler>"
 
         msg += (f"\nУдарный режим: {db.get_days(user)} 🔥\n" +
