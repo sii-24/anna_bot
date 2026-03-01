@@ -15,7 +15,14 @@ from support import support
 from mailing import mailing_handler
 
 
-app = ApplicationBuilder().token(TOKEN).build()
+app = (ApplicationBuilder()
+       .token(TOKEN)
+       .read_timeout(60)
+       .write_timeout(120)
+       .connect_timeout(30)
+       .pool_timeout(60)
+       .build()
+       )
 
 
 #app.job_queue.run_repeating(

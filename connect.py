@@ -98,7 +98,7 @@ class DB:
         test += 1
         if test == 7:
             test = 0
-        self.cur_us.execute("UPDATE serv SET DATA = ? WHERE key = ?", (test, "test"))    
+        self.cur_us.execute("UPDATE serv SET data = ? WHERE key = ?", (test, "test"))    
         self.cur_us.execute("UPDATE serv SET data = ? WHERE key = ?", (ex_n, "ex_n"))
         self.db_us.commit()
 
